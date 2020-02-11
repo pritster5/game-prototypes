@@ -1,4 +1,4 @@
-# GMU CS325 Introduction to Game Design
+# GMU CS325 Introduction to Game Design - Prithvi Boinpally
 
 This repository contains all of your games as well as a few simple "hello, world!"
 templates for a game made with Phaser.
