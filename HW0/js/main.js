@@ -3,20 +3,25 @@
 function make_main_game_state(game) {
     function preload() {
         // Load an image and call it 'logo'.
-        game.load.image( 'logo', 'assets/BG.png' );
+        game.load.image('bg', 'assets/BG.png');
+        game.load.image('gnd', 'assets/Ground.png');
+        game.load.image('gub', 'assets/GroundUnitBlock.png');
     }
-    var bouncy;
+    //var bouncy;
     function create() {
+        var bgnd = game.add.sprite(0,0, 'bg');   
+
         // Create a sprite at the center of the screen using the 'logo' image.
-        //bouncy = game.add.sprite( game.world.centerX, game.world.centerY, 'logo' );
+        //bouncy = game.add.sprite( game.world.centerX, game.world.centerY, 'gub' );
         // Anchor the sprite at its center, as opposed to its top-left corner.
         // so it will be truly centered.
         //bouncy.anchor.setTo( 0.5, 0.5 );
-        
         // Turn on the arcade physics engine for this sprite.
         //game.physics.enable( bouncy, Phaser.Physics.ARCADE );
         // Make it bounce off of the world bounds.
         //bouncy.body.collideWorldBounds = true;
+
+        //var gnd = game.add.sprite(0,368, 'gnd');
         
         // Add some text using a CSS style.
         // Center it in X, and position its top 15 pixels from the top of the world.
@@ -30,7 +35,7 @@ function make_main_game_state(game) {
         // in X or Y.
         // This function returns the rotation angle that makes it visually match its
         // new trajectory.
-        bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, game.input.activePointer, 500, 500, 500 );
+        //bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, game.input.activePointer, 500, 500, 500 );
     }
     return { "preload": preload, "create": create, "update": update };
 }
