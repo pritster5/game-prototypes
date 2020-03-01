@@ -34,8 +34,8 @@ window.onload = function() {
     // Load Visual assets.
     this.load.image('sky', 'assets/sky.png');
     this.load.image('gnd', 'assets/ground.png');
-    this.load.spritesheet('dude', 'assets/dude.png', {frameWidth:32, frameHeight:48})
-    this.load.spritesheet('baddie', 'assets/baddude.png', {frameWidth:32, frameHeight:48})
+    this.load.spritesheet('dude', 'assets/dude.png', {frameWidth:32, frameHeight:46})
+    this.load.spritesheet('baddie', 'assets/baddude.png', {frameWidth:32, frameHeight:46})
 
     //Load Audio assets
     this.load.audio("playerJumpSound", 'assets/audio/sfx_movement_jump7.mp3');
@@ -61,9 +61,9 @@ window.onload = function() {
     this.physics.add.existing(ground, true); //Give it static phsyics so the player collides with it
     //PLAYER
     player = this.physics.add.sprite(256, 344, 'dude'); //Create a player that falls with gravity
-    player.setBounce(0.1); //Give him a lil bounce
+    player.setBounce(0.2); //Give him a lil bounce
     player.setCollideWorldBounds(true); // Don't let him fall or move off screen
-    this.physics.add.collider(ground, player); //Check for collisio between the player and ground
+    this.physics.add.collider(ground, player); //Check for collision between the player and ground
     this.playerJumpSound = this.sound.add("playerJumpSound"); //Add audio for player jump
     this.anims.create({ //Move left animation
       key: 'left',
@@ -86,7 +86,7 @@ window.onload = function() {
     //ENEMY
     baddie = this.physics.add.sprite(256, 344, 'baddie'); //Create a baddie that falls with gravity
     baddie.setCollideWorldBounds(true); // Don't let him fall or move off screen
-    this.physics.add.collider(ground, baddie); //Check for collisio between the baddie and ground
+    this.physics.add.collider(ground, baddie); //Check for collision between the baddie and ground
     this.anims.create({ //Move left animation
       key: 'bleft',
       frames: this.anims.generateFrameNumbers('baddie', {start:0, end:3}),
@@ -122,7 +122,7 @@ window.onload = function() {
   
 
   function update(time) {
-    if (gameOver){
+    if (gameOver == true){
       return;
     }
 
@@ -163,7 +163,6 @@ window.onload = function() {
       } 
     }
 
-    console.log(baddie.body.velocity.x);
     if (baddie.body.velocity.x > 0){
       baddie.anims.play('bright', true);
     }
@@ -178,11 +177,11 @@ window.onload = function() {
 
   function touchedEnemy(player, baddie){ //Endgame Function
     this.physics.pause();
-    this.gameOverSound.play();
     player.setTint(0xff0000);
     player.anims.play('turn');
     baddie.anims.play('bturn');
     gameOver = true;
+    this.gameOverSound.play();
     this.gameOverText.visible = true;
   }
 };
