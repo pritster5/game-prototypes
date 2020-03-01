@@ -34,15 +34,14 @@ window.onload = function() {
     // Load Visual assets.
     this.load.image('sky', 'assets/sky.png');
     this.load.image('gnd', 'assets/ground.png');
-    this.load.spritesheet('dude', 'assets/dude.png', {frameWidth:32, frameHeight:46})
-    this.load.spritesheet('baddie', 'assets/baddude.png', {frameWidth:32, frameHeight:46})
+    this.load.spritesheet('dude', 'assets/dude.png', {frameWidth:32, frameHeight:42})
+    this.load.spritesheet('baddie', 'assets/baddude.png', {frameWidth:32, frameHeight:42})
 
     //Load Audio assets
     this.load.audio("playerJumpSound", 'assets/audio/sfx_movement_jump7.mp3');
     this.load.audio("gameOver", 'assets/audio/sfx_gameover.mp3');
   }
   
-
   var player; //Make a player in global scope so that their position can be updated
   var baddie; //Make an enemy character and give them the same animations ase the player
   var cursors; //Var to handle keyboard input
