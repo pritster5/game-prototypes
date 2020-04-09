@@ -49,6 +49,8 @@ var player;
 var aimer;
 var playerBullets;
 var enemyGrunts;
+var gruntMinSpeed = 10;
+var gruntMaxSpeed = 60;
 var projectile;
 var lungsBG;
 class Game extends Phaser.Scene{
@@ -149,15 +151,17 @@ class Game extends Phaser.Scene{
             setXY: { x: 60, y: 0, stepX: 60 }
         });
         enemyGrunts.children.iterate(function(child){
-            child.setVelocity(0, Phaser.Math.FloatBetween(20, 100))
+            child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed))
         })
         //Disable the enemy grunts when hit with a antibody
         this.physics.add.collider(enemyGrunts, playerBullets, enemyHitCallback, null, this);
-        //Disable the grunts when they touch the longs, then change the lungs
+        //Completely kill the grunts if they touch the player after being antibodied
+        this.physics.add.overlap(player, enemyGrunts, collectGrunt, null, this);
+        //Disable the grunts when they touch the lungs, then tint the lungs
         this.physics.add.collider(enemyGrunts, lungsBG, lungsHitCallback, null, this);
 
         var gameOverTextStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
-        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER:\nYou got Infected', gameOverTextStyle).setOrigin(0.5,0.5); //GameOver Text
+        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', gameOverTextStyle).setOrigin(0.5,0.5); //GameOver Text
         this.gameOverText.visible = false; 
     }
 
@@ -189,9 +193,17 @@ class Game extends Phaser.Scene{
 function enemyHitCallback(enemyHit, bulletHit){
     // If hit is true, disable both the projectile and the enemy
     if (bulletHit.active === true && enemyHit.active === true){
+        enemyHit.body.moves = false;
+        // Make projectile stick to the enemy
+        bulletHit.body.moves = false;
+        bulletHit.setActive(false);
+    }
+}
+
+function collectGrunt(player, enemyHit){
+    // If the enemy has already been anti-bodied, we can kill them
+    if (enemyHit.body.moves === false){
         enemyHit.setActive(false).setVisible(false);
-        // Destroy projectile
-        bulletHit.setActive(false).setVisible(false);
     }
 }
 
@@ -201,8 +213,11 @@ function lungsHitCallback(lungsHit, enemyHit){
         enemyHit.setActive(false).setVisible(false);
         // Show damage to the lungs
         lungsHit.setTint(0xff0000);
-        gameOver = true;
         this.gameOverText.visible = true;
+        gameOver = true;
+        //this.menuMusic.pause(); //STOP THE MUSIC
+        this.physics.pause(); //Pause the physics
+        //this.game.input.keyboard.disable = false;
         //this.scene.start("menuGame");
     }
 }

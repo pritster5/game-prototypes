@@ -59,7 +59,7 @@ class Game extends Phaser.Scene{
         ammoText.visible = false;
         this.loseSound.play();
         this.gameOverTextLose.visible = true; //Show loser text
-        this.physics.pause(); //Pasue the physics
+        this.physics.pause(); //Pause the physics
         prjctle.disableBody(true,true); //Disable the last projectile
         gameOver = true; //Allow update to stop
       }
