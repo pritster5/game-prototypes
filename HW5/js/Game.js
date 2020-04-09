@@ -51,6 +51,7 @@ var playerBullets;
 var enemyGrunts;
 var gruntMinSpeed = 10;
 var gruntMaxSpeed = 60;
+var gruntAmount = 8;
 var projectile;
 var lungsBG;
 class Game extends Phaser.Scene{
@@ -147,7 +148,7 @@ class Game extends Phaser.Scene{
         //Baddies Spawn Loop. Spawns r times the wave number, so 5 on the first wave, 10 on the second, etc. 
         enemyGrunts = this.physics.add.group({
             key: 'enemyGrunt',
-            repeat: Phaser.Math.FloatBetween(3, 10),
+            repeat: gruntAmount,
             setXY: { x: 60, y: 0, stepX: 60 }
         });
         enemyGrunts.children.iterate(function(child){
@@ -162,7 +163,9 @@ class Game extends Phaser.Scene{
 
         var gameOverTextStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
         this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', gameOverTextStyle).setOrigin(0.5,0.5); //GameOver Text
-        this.gameOverText.visible = false; 
+        this.gameOverText.visible = false;
+        this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN :D\n\nPress F5 to Replay', gameOverTextStyle).setOrigin(0.5,0.5); //GameOver Text
+        this.victoryText.visible = false;
     }
 
 
@@ -170,6 +173,13 @@ class Game extends Phaser.Scene{
         if (gameOver == true){
             return;
         }
+
+        if (gruntAmount === 0){
+            this.victoryText.visible = true;
+            this.physics.pause();
+            gameOver = true;
+        }
+
         this.background.tilePositionY -= 0.25; //Scroll the background for a parallax feel
 
         // Rotates player to face towards the mouse cursor
@@ -204,6 +214,7 @@ function collectGrunt(player, enemyHit){
     // If the enemy has already been anti-bodied, we can kill them
     if (enemyHit.body.moves === false){
         enemyHit.setActive(false).setVisible(false);
+        //gruntAmount-=1;
     }
 }
 
