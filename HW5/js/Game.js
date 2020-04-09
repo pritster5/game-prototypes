@@ -156,7 +156,7 @@ class Game extends Phaser.Scene{
         //Disable the grunts when they touch the longs, then change the lungs
         this.physics.add.collider(enemyGrunts, lungsBG, lungsHitCallback, null, this);
 
-        var gameOverTextStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', boundsAlignH: "center", boundsAlignV: "middle", strokeThickness: 10};
+        var gameOverTextStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
         this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER:\nYou got Infected', gameOverTextStyle).setOrigin(0.5,0.5); //GameOver Text
         this.gameOverText.visible = false; 
     }
@@ -203,5 +203,6 @@ function lungsHitCallback(lungsHit, enemyHit){
         lungsHit.setTint(0xff0000);
         gameOver = true;
         this.gameOverText.visible = true;
+        //this.scene.start("menuGame");
     }
 }
