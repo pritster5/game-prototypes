@@ -214,7 +214,7 @@ function collectGrunt(player, enemyHit){
     // If the enemy has already been anti-bodied, we can kill them
     if (enemyHit.body.moves === false){
         enemyHit.setActive(false).setVisible(false);
-        //gruntAmount-=1;
+        gruntAmount -= 1;
     }
 }
 
