@@ -213,6 +213,7 @@ function collectGrunt(player, enemyHit){
     //console.log(gruntAmount);
     // If the enemy has already been anti-bodied, we can kill them
     if (enemyHit.body.moves === false){
+        enemyHit.body.checkCollision.none = true;
         enemyHit.setActive(false).setVisible(false);
         gruntAmount -= 1;
         //console.log(gruntAmount);
