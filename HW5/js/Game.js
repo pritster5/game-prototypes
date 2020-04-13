@@ -56,7 +56,6 @@ var projectile;
 var lungsBG;
 class Game extends Phaser.Scene{
     constructor(){
-        //super() inherits all the characteristics of the Phaser "scene" class
         super("playGame");
     }
 
