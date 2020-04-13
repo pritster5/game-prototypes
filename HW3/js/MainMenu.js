@@ -1,7 +1,6 @@
 class MainMenu extends Phaser.Scene{
     constructor(){
-        //super() inherits all the characteristics of the Phaser "scene" class
-        super("mainMenu");
+        super("mainMenu"); //Identifier for the scene.
     }
     preload(){
         // Load Visual assets.

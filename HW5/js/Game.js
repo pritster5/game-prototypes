@@ -226,7 +226,7 @@ function lungsHitCallback(lungsHit, enemyHit){
         lungsHit.setTint(0xff0000);
         this.gameOverText.visible = true;
         gameOver = true;
-        //this.menuMusic.pause(); //STOP THE MUSIC
+        this.scene.getScene('mainMenu').menuMusic.pause() //STOP THE MUSIC
         this.physics.pause(); //Pause the physics
         //this.game.input.keyboard.disable = false;
         //this.scene.start("menuGame");
