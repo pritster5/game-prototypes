@@ -35,7 +35,7 @@ var Projectile = new Phaser.Class({
         this.x += this.xSpeed * delta;
         this.y += this.ySpeed * delta;
         this.born += delta;
-        if (this.born > 1800){
+        if (this.born > 10000){ //Removes bullets from sceen if the time between the current one and last spawned is more than 1.8 s
             this.setActive(false);
             this.setVisible(false);
         }
@@ -189,13 +189,13 @@ class Game extends Phaser.Scene{
     }
 
     // Function to handle the spawning of baddies -- Should be called inside of the update method
-    spawnEnemy(){
-        //Call the move function inside here
-    }
+    // spawnEnemy(){
+    //     //Call the move function inside here
+    // }
     //Function to handle the movement of baddies
-    moveEnemy(){
+    // moveEnemy(){
 
-    }
+    // }
 
 }
 
@@ -210,10 +210,12 @@ function enemyHitCallback(enemyHit, bulletHit){
 }
 
 function collectGrunt(player, enemyHit){
+    //console.log(gruntAmount);
     // If the enemy has already been anti-bodied, we can kill them
     if (enemyHit.body.moves === false){
         enemyHit.setActive(false).setVisible(false);
         gruntAmount -= 1;
+        //console.log(gruntAmount);
     }
 }
 
@@ -225,7 +227,7 @@ function lungsHitCallback(lungsHit, enemyHit){
         lungsHit.setTint(0xff0000);
         this.gameOverText.visible = true;
         gameOver = true;
-        this.scene.getScene('mainMenu').menuMusic.pause() //STOP THE MUSIC
+        //game.scene.getScene('mainMenu').menuMusic.pause() //STOP THE MUSIC
         this.physics.pause(); //Pause the physics
         //this.game.input.keyboard.disable = false;
         //this.scene.start("menuGame");

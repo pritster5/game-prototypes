@@ -7,6 +7,7 @@ class Preloader extends Phaser.Scene{
         // I.e. THIS FUNCTION ONLY NEEDS TO BE IN ONE SCENE FILE 
         this.load.image('playBtn', 'assets/PlayBtn.png');
         this.load.image('playBtnPressed', 'assets/PlayBtnPressed.png');
+        this.load.image('loadingBG', 'assets/LungDefenderLoading.png');
         this.load.image('menuBG', 'assets/Lungs_BG.png');
         this.load.image('gameBG', 'assets/BloodCells_BG_Tiling.png');
         this.load.image('player', 'assets/Macrophage.png');
@@ -18,6 +19,7 @@ class Preloader extends Phaser.Scene{
         this.load.audio('menuMusic', 'assets/menuMusic.mp3');
     }
     create(){
-        this.scene.start("mainMenu"); //Start new scene
+        var bg = this.add.image(0,0, 'loadingBG').setOrigin(0,0);
+        this.scene.start("menuGame"); //Start new scene
     }
 }
