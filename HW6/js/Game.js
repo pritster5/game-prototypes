@@ -167,7 +167,7 @@ class Game extends Phaser.Scene{
             }
         }, this);
 
-        this.spawnBaddies();
+        this.spawnBaddies(); //initialize wave 1 before the collider is reached
 
         //Disable the enemy grunts when hit with a antibody
         this.physics.add.collider(enemyGrunts, playerBullets, enemyHitCallback, null, this);
