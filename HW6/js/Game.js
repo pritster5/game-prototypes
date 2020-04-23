@@ -63,10 +63,14 @@ class Game extends Phaser.Scene{
         super("playGame");
     }
 
-    //Function to handle the spawning of baddies -- Should be called inside of the update method
+    //Function to handle the spawning of baddies -- Should be called inside of the update method as well as once inside create() to initialize
     spawnBaddies(){
         //Baddies Spawn Loop. Spawns 2 times the wave number, so 2 on the first wave, 4 on the second, etc. 
-        //console.log("Entered spawnBaddies");
+        enemyGrunts.createMultiple({
+            key: 'enemyGrunt', 
+            repeat: gruntAmount - 1,
+            setXY: { x: 60, y: 0, stepX: 60 } 
+        }) //Call the spawner
         enemyGrunts.children.iterate(function(child){
             child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed));
         });
@@ -161,21 +165,16 @@ class Game extends Phaser.Scene{
             }
         }, this);
 
-        enemyGrunts = this.physics.add.group({
-            key: 'enemyGrunt',
-            repeat: gruntAmount - 1,
-            setXY: { x: 60, y: 0, stepX: 60 }
-        });
-        //console.log(enemyGrunts.getChildren());
-        
-        this.spawnBaddies(); //initialize wave 1 before the collider is reached
+        //Initial spawn of enemies for wave 1 - Also initializes enemyGrunts group
+        enemyGrunts = this.physics.add.group();        
+        this.spawnBaddies(); //initialize wave 1's grunts movement
 
+        //Give the player ammo if they overlap with the B-Cell
+        this.physics.add.overlap(player, bCellAmmo, ammoCallback, null, this);
         //Disable the enemy grunts when hit with a antibody
         this.physics.add.collider(enemyGrunts, playerBullets, enemyHitCallback, null, this);
         //Completely kill the grunts if they touch the player after being antibodied
-        this.physics.add.overlap(player, enemyGrunts, collectGrunt, null, this);
-        //Give the player ammo if they overlap with the B-Cell
-        this.physics.add.overlap(player, bCellAmmo, ammoCallback, null, this);
+        this.physics.add.overlap(player, enemyGrunts, collectGruntCallback, null, this);
         //Disable the grunts when they touch the lungs, then tint the lungs
         this.physics.add.collider(enemyGrunts, lungsBG, lungsHitCallback, null, this);
 
@@ -203,15 +202,7 @@ class Game extends Phaser.Scene{
             else{
                 currentWave += 1; //Increment the wave amount to make more baddies spawn
                 gruntAmount = currentWave * 2
-                console.log("About to create grunt");
-                enemyGrunts.createMultiple({
-                    repeat: gruntAmount - 1,
-                    setXY: { x: 60, y: 0, stepX: 60 } 
-                }) //Call the spawner
-                enemyGrunts.children.iterate(function(child){
-                    child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed));
-                });
-                console.log("Created grunt");
+                this.spawnBaddies(); //Spawn next wave
             }
         }
 
@@ -235,14 +226,11 @@ function enemyHitCallback(enemyHit, bulletHit){
     }
 }
 
-function collectGrunt(player, enemyHit){
-    //console.log(gruntAmount);
+function collectGruntCallback(player, enemyHit){
     // If the enemy has already been anti-bodied, we can kill them
     if (enemyHit.body.moves === false){
-        enemyHit.body.checkCollision.none = true;
-        enemyHit.setActive(false).setVisible(false);
+        enemyGrunts.remove(enemyHit, true, true); //Destroy the hitgrunt Completely
         gruntAmount -= 1;
-        //console.log(gruntAmount);
     }
 }
 
