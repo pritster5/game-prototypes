@@ -178,13 +178,16 @@ class Game extends Phaser.Scene{
 
 
     update(time){
-        if (gameOver == true){
+        if (gameOver == true){ //Things that need to happen on game over REGARDLESS of win/lose state go here
+            this.physics.pause(); //Pause the physics
+            this.time.delayedCall(1000 * 1, function(){
+                game.sound.stopAll() //Stop all currently playing sounds 1 sec(s) after gameover
+            })
             return;
         }
 
         if (gruntAmount === 0){
             this.victoryText.visible = true;
-            this.physics.pause();
             gameOver = true;
         }
 
@@ -242,9 +245,5 @@ function lungsHitCallback(lungsHit, enemyHit){
         lungsHit.setTint(0xff0000);
         this.gameOverText.visible = true;
         gameOver = true;
-        //game.scene.getScene('mainMenu').menuMusic.pause() //STOP THE MUSIC
-        this.physics.pause(); //Pause the physics
-        //this.game.input.keyboard.disable = false;
-        //this.scene.start("menuGame");
     }
 }

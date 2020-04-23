@@ -7,8 +7,13 @@ class Preloader extends Phaser.Scene{
         // I.e. THIS FUNCTION ONLY NEEDS TO BE IN ONE SCENE FILE 
         this.load.image('playBtn', 'assets/PlayBtn.png');
         this.load.image('playBtnPressed', 'assets/PlayBtnPressed.png');
+        this.load.image('controlsBtn', 'assets/controlsBtn.png');
+        this.load.image('controlsBtnPressed', 'assets/controlsBtnPressed.png');
+        this.load.image('backBtn', 'assets/backBtn.png');
+        this.load.image('backBtnPressed', 'assets/backBtnPressed.png');
         this.load.image('loadingBG', 'assets/LungDefenderLoading.png');
         this.load.image('menuBG', 'assets/Lungs_BG.png');
+        this.load.image('controlsBG', 'assets/controlsBG.png');
         this.load.image('gameBG', 'assets/BloodCells_BG_Tiling.png');
         this.load.image('player', 'assets/Macrophage.png');
         this.load.image('projectile', 'assets/Antibody.png');
