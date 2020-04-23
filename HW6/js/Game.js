@@ -67,12 +67,6 @@ class Game extends Phaser.Scene{
     spawnBaddies(){
         //Baddies Spawn Loop. Spawns 2 times the wave number, so 2 on the first wave, 4 on the second, etc. 
         //console.log("Entered spawnBaddies");
-        enemyGrunts = this.physics.add.group({
-            key: 'enemyGrunt',
-            repeat: gruntAmount - 1,
-            setXY: { x: 60, y: 0, stepX: 60 }
-        });
-        //console.log(enemyGrunts.getChildren());
         enemyGrunts.children.iterate(function(child){
             child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed));
         });
@@ -167,6 +161,13 @@ class Game extends Phaser.Scene{
             }
         }, this);
 
+        enemyGrunts = this.physics.add.group({
+            key: 'enemyGrunt',
+            repeat: gruntAmount - 1,
+            setXY: { x: 60, y: 0, stepX: 60 }
+        });
+        //console.log(enemyGrunts.getChildren());
+        
         this.spawnBaddies(); //initialize wave 1 before the collider is reached
 
         //Disable the enemy grunts when hit with a antibody
@@ -202,7 +203,15 @@ class Game extends Phaser.Scene{
             else{
                 currentWave += 1; //Increment the wave amount to make more baddies spawn
                 gruntAmount = currentWave * 2
-                this.spawnBaddies(); //Call the spawner
+                console.log("About to create grunt");
+                enemyGrunts.createMultiple({
+                    repeat: gruntAmount - 1,
+                    setXY: { x: 60, y: 0, stepX: 60 } 
+                }) //Call the spawner
+                enemyGrunts.children.iterate(function(child){
+                    child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed));
+                });
+                console.log("Created grunt");
             }
         }
 
