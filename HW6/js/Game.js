@@ -43,13 +43,14 @@ var Projectile = new Phaser.Class({
 
 });
 
-var waveNumber = 1
+var currentWave = 1; //Start on the first wave
+var maxWave = 3; //The enemy spawn loop terminates after the third wave
 var gameOver = false;
 var aimer;
 var enemyGrunts; //Actual sprite for enemyGrunt group
 var gruntMinSpeed = 10;
-var gruntMaxSpeed = 60;
-var gruntAmount = waveNumber * 2; //Amount to spawn
+var gruntMaxSpeed = 40;
+var gruntAmount = currentWave * 2; //Amount to spawn
 var projectile;
 var lungsBG;
 var player;
@@ -151,15 +152,7 @@ class Game extends Phaser.Scene{
             }
         }, this);
 
-        //Baddies Spawn Loop. Spawns r times the wave number, so 5 on the first wave, 10 on the second, etc. 
-        enemyGrunts = this.physics.add.group({
-            key: 'enemyGrunt',
-            repeat: gruntAmount - 1,
-            setXY: { x: 60, y: 0, stepX: 60 }
-        });
-        enemyGrunts.children.iterate(function(child){
-            child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed))
-        })
+        
         //Disable the enemy grunts when hit with a antibody
         this.physics.add.collider(enemyGrunts, playerBullets, enemyHitCallback, null, this);
         //Completely kill the grunts if they touch the player after being antibodied
@@ -176,6 +169,18 @@ class Game extends Phaser.Scene{
         this.victoryText.visible = false;
     }
 
+    // Function to handle the spawning of baddies -- Should be called inside of the update method
+    spawnBaddies(){
+        //Baddies Spawn Loop. Spawns r times the wave number, so 5 on the first wave, 10 on the second, etc. 
+        enemyGrunts = this.physics.add.group({
+            key: 'enemyGrunt',
+            repeat: gruntAmount - 1,
+            setXY: { x: 60, y: 0, stepX: 60 }
+        });
+        enemyGrunts.children.iterate(function(child){
+            child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed));
+        });
+    }
 
     update(time){
         if (gameOver == true){ //Things that need to happen on game over REGARDLESS of win/lose state go here
@@ -187,8 +192,15 @@ class Game extends Phaser.Scene{
         }
 
         if (gruntAmount === 0){
-            this.victoryText.visible = true;
-            gameOver = true;
+            if(currentWave === maxWave){ //If we're on wave 3 (max) and gruntAmount is zero, that means the player has defeated all waves
+                this.victoryText.visible = true;
+                gameOver = true; 
+            }
+            else{
+                currentWave += 1; //Increment the wave amount to make the spawnBaddies code harder
+                gruntAmount = currentWave * 2
+                this.spawnBaddies(); //Otherwise, spawn the next wave of enemies (current wave num * 2, e.g. wave 3 spawns 6 grunts)
+            }
         }
 
         this.background.tilePositionY += 0.15; //Scroll the background for a parallax feel
@@ -198,10 +210,7 @@ class Game extends Phaser.Scene{
         // Matches the movement of the player to the mouse cursor so that aim stays steady
         aimer.body.velocity.x = player.body.velocity.x;
         aimer.body.velocity.y = player.body.velocity.y;
-    }
-
-    // Function to handle the spawning of baddies -- Should be called inside of the update method
-
+    } 
 }
 
 function enemyHitCallback(enemyHit, bulletHit){
@@ -230,7 +239,7 @@ function ammoCallback(player, bCellAmmo){
         playerAmmoCnt = 5; //If the player touches the B-Cell on full ammo, do nothing. Only give player ammo if they have less than max
         bCellAmmo.setTexture('bCellEmpty');
         bCellAmmo.body.checkCollision.none = true;
-        this.time.delayedCall(1000 * 1, function(){
+        this.time.delayedCall(1000 * 3, function(){ //3 sec gap between ammo resupply
             bCellAmmo.body.checkCollision.none = false;
             bCellAmmo.setTexture('bCell');
         });
