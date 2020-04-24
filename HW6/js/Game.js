@@ -44,7 +44,7 @@ var Projectile = new Phaser.Class({
 });
 
 var currentWave = 1; //Start on the first wave
-var maxWave = 3; //The enemy spawn loop terminates after the third wave
+var maxWave = 5; //The enemy spawn loop terminates after the third wave
 var gameOver = false;
 var aimer;
 var enemyGrunts; //Actual sprite for enemyGrunt group
