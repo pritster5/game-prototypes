@@ -18,6 +18,7 @@ class Preloader extends Phaser.Scene{
         this.load.image('player', 'assets/Macrophage.png');
         this.load.image('projectile', 'assets/Antibody.png');
         this.load.image('enemyGrunt', 'assets/EnemyGrunt.png');
+        this.load.image('boss', 'assets/BossCovid.png');
         this.load.image('lungs','assets/Lungs.png');
         this.load.image('bCell','assets/B_Cell.png');
         this.load.image('bCellEmpty','assets/B_Cell_Empty.png');

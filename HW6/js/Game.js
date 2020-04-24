@@ -53,6 +53,7 @@ var gruntMaxSpeed = 40;
 var gruntAmount = currentWave * 2; //Amount to spawn
 var projectile;
 var lungsBG;
+var boss;
 var player;
 var playerAmmoCnt = 3;
 var playerBullets;
@@ -101,38 +102,38 @@ class Game extends Phaser.Scene{
         });
     
         // Move on press
-        this.input.keyboard.on('keydown_W', function (event){
+        this.input.keyboard.on('keydown_W', (event)=>{
             player.setAccelerationY(-500);
         });
-        this.input.keyboard.on('keydown_S', function (event){
+        this.input.keyboard.on('keydown_S', (event)=>{
             player.setAccelerationY(500);
         });
-        this.input.keyboard.on('keydown_A', function (event){
+        this.input.keyboard.on('keydown_A', (event)=>{
             player.setAccelerationX(-500);
         });
-        this.input.keyboard.on('keydown_D', function (event){
+        this.input.keyboard.on('keydown_D', (event)=>{
             player.setAccelerationX(500);
         });
     
         // Stop moving on release. Since it's acceleration, you will slow down gradually
-        this.input.keyboard.on('keyup_W', function (event){
+        this.input.keyboard.on('keyup_W', (event)=>{
             if (moveKeys['down'].isUp)
                 player.setAccelerationY(0);
         });
-        this.input.keyboard.on('keyup_S', function (event){
+        this.input.keyboard.on('keyup_S', (event)=>{
             if (moveKeys['up'].isUp)
                 player.setAccelerationY(0);
         });
-        this.input.keyboard.on('keyup_A', function (event){
+        this.input.keyboard.on('keyup_A', (event)=>{
             if (moveKeys['right'].isUp)
                 player.setAccelerationX(0);
         });
-        this.input.keyboard.on('keyup_D', function (event){
+        this.input.keyboard.on('keyup_D', (event)=>{
             if (moveKeys['left'].isUp)
                 player.setAccelerationX(0);
         });
         // Shoot whenever the left mouse button is pressed
-        this.input.on('pointerdown', function (pointer, time, lastFired){
+        this.input.on('pointerdown', (pointer, time, lastFired)=>{
             if (playerAmmoCnt > 0){
                     playerAmmoCnt -= 1;
                     // Get projectile from bullets group
@@ -146,19 +147,19 @@ class Game extends Phaser.Scene{
     
         // Sync up the aimer to the mouse cursor/pointer
         // Pointer lock will only work after mousedown
-        game.canvas.addEventListener('mousedown', function () {
+        game.canvas.addEventListener('mousedown', ()=>{
             game.input.mouse.requestPointerLock();
         });
 
         // Exit pointer lock when Q or escape (by default) is pressed.
-        this.input.keyboard.on('keydown_Q', function (event){
+        this.input.keyboard.on('keydown_Q', (event)=>{
             if (game.input.mouse.locked){
                 game.input.mouse.releasePointerLock();
             }
         }, 0, this);
     
         // Move aimer upon locked pointer move
-        this.input.on('pointermove', function (pointer){
+        this.input.on('pointermove', (pointer)=>{
             if (this.input.mouse.locked){
                 aimer.x += pointer.movementX;
                 aimer.y += pointer.movementY;
@@ -169,6 +170,10 @@ class Game extends Phaser.Scene{
         enemyGrunts = this.physics.add.group();        
         this.spawnBaddies(); //initialize wave 1's grunts movement
 
+        boss = this.physics.add.image(config.width / 2, config.height / 2, 'boss'); // Spawn the boss
+        boss.setVisible(false); //Make the boss invisible. Only make it visible again after waves have been complete
+        boss.setActive(false); //Disable the boss from having it's logic computed
+
         //Give the player ammo if they overlap with the B-Cell
         this.physics.add.overlap(player, bCellAmmo, ammoCallback, null, this);
         //Disable the enemy grunts when hit with a antibody
@@ -177,32 +182,42 @@ class Game extends Phaser.Scene{
         this.physics.add.overlap(player, enemyGrunts, collectGruntCallback, null, this);
         //Disable the grunts when they touch the lungs, then tint the lungs
         this.physics.add.collider(enemyGrunts, lungsBG, lungsHitCallback, null, this);
+        //Game over when the boss hits the lungs
+        this.physics.add.collider(boss, lungsBG, lungsHitCallback, null, this);
 
-        var gameOverTextStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
-        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', gameOverTextStyle).setOrigin(0.5,0.5); //GameOver Text
+        var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
+        this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
+        this.nextWaveText.visible = false;
+        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
         this.gameOverText.visible = false;
-        this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN :D\n\nPress F5 to Replay', gameOverTextStyle).setOrigin(0.5,0.5); //GameOver Text
+        this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN :D\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
         this.victoryText.visible = false;
     }
 
     update(time){
         if (gameOver == true){ //Things that need to happen on game over REGARDLESS of win/lose state go here
             this.physics.pause(); //Pause the physics
-            this.time.delayedCall(1000 * 1, function(){
-                game.sound.stopAll() //Stop all currently playing sounds 1 sec(s) after gameover
-            })
+            this.time.delayedCall(1000 * 2, () => { //ES6 ONLY - ARROW FUNCTIONS DO NOT NEED PARAMETER INPUTS FOR args AND/OR callbackScope. THIS IS WHY THEY'RE MORE CONVENIENT THAN function() 
+                this.sound.removeByKey('menuMusic'); 
+            });
             return;
         }
 
         if (gruntAmount === 0){
             if(currentWave === maxWave){ //If we're on wave 3 (max) and gruntAmount is zero, that means the player has defeated all waves
+                //boss.setVisible(true); //Make the boss invisible. Only make it visible again after waves have been complete
+                //boss.setActive(true); //Disable the boss from having it's logic computed
                 this.victoryText.visible = true;
-                gameOver = true; 
+                gameOver = true;
             }
             else{
                 currentWave += 1; //Increment the wave amount to make more baddies spawn
                 gruntAmount = currentWave * 2
-                this.spawnBaddies(); //Spawn next wave
+                this.nextWaveText.visible = true; //Tell the player the next wave is coming and then soawn the, after 3 secs
+                this.time.delayedCall(1000 * 3, () => {
+                    this.nextWaveText.visible = false; //THIS LINE IS BUGGED
+                    this.spawnBaddies(); //Spawn next wave
+                });
             }
         }
 
@@ -239,7 +254,7 @@ function ammoCallback(player, bCellAmmo){
         playerAmmoCnt = 5; //If the player touches the B-Cell on full ammo, do nothing. Only give player ammo if they have less than max
         bCellAmmo.setTexture('bCellEmpty');
         bCellAmmo.body.checkCollision.none = true;
-        this.time.delayedCall(1000 * 3, function(){ //3 sec gap between ammo resupply
+        this.time.delayedCall(1000 * 3, ()=>{ //3 sec gap between ammo resupply
             bCellAmmo.body.checkCollision.none = false;
             bCellAmmo.setTexture('bCell');
         });

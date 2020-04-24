@@ -11,7 +11,7 @@ class MainMenu extends Phaser.Scene{
             mute: 0,
             volume: 0.6,
             seek: 0,
-            loop: false, //DEBUG. Change back to true for final build
+            loop: true,
             delay: 0
         }
         menuMusic.play(musicConfig); // Start Playing the menu bg music
