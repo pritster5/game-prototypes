@@ -166,9 +166,23 @@ class Game extends Phaser.Scene{
             }
         }, this);
 
-        //Initial spawn of enemies for wave 1 - Also initializes enemyGrunts group
+        var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
+        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5) //Wave start text
+        this.introText.visible = false;
+        this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
+        this.nextWaveText.visible = false;
+        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
+        this.gameOverText.visible = false;
+        this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
+        this.victoryText.visible = false;
+
+        //Initializes enemyGrunts group
+        this.introText.visible = true;
         enemyGrunts = this.physics.add.group();        
-        this.spawnBaddies(); //initialize wave 1's grunts movement
+        this.time.delayedCall(1000 * 3, ()=>{
+            this.introText.visible = false; //THIS LINE IS BUGGED
+            this.spawnBaddies(); //Spawn first wave
+        });
 
         boss = this.physics.add.image(config.width / 2, config.height / 2, 'boss'); // Spawn the boss
         boss.setVisible(false); //Make the boss invisible. Only make it visible again after waves have been complete
@@ -183,17 +197,7 @@ class Game extends Phaser.Scene{
         //Disable the grunts when they touch the lungs, then tint the lungs
         this.physics.add.collider(enemyGrunts, lungsBG, lungsHitCallback, null, this);
         //Game over when the boss hits the lungs
-        this.physics.add.collider(boss, lungsBG, lungsHitCallback, null, this);
-
-        var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
-        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5) //Wave start text
-        this.introText.visible = false;
-        this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
-        this.nextWaveText.visible = false;
-        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
-        this.gameOverText.visible = false;
-        this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
-        this.victoryText.visible = false;
+        this.physics.add.collider(boss, lungsBG, lungsHitCallback, null, this);        
     }
 
     update(time){
