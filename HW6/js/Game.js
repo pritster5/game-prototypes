@@ -197,13 +197,17 @@ class Game extends Phaser.Scene{
         //Disable the grunts when they touch the lungs, then tint the lungs
         this.physics.add.collider(enemyGrunts, lungsBG, lungsHitCallback, null, this);
         //Game over when the boss hits the lungs
-        this.physics.add.collider(boss, lungsBG, lungsHitCallback, null, this);        
+        this.physics.add.collider(boss, lungsBG, lungsHitCallback, null, this);
+
+        //Audio
+        this.winSound = this.sound.add("winSound");
+        this.loseSound = this.sound.add("loseSound");   
     }
 
     update(time){
         if (gameOver == true){ //Things that need to happen on game over REGARDLESS of win/lose state go here
             this.physics.pause(); //Pause the physics
-            this.time.delayedCall(1000 * 2, () => { //ES6 ONLY - ARROW FUNCTIONS DO NOT NEED PARAMETER INPUTS FOR args AND/OR callbackScope. THIS IS WHY THEY'RE MORE CONVENIENT THAN function() 
+            this.time.delayedCall(1000 * 1, () => { //ES6 ONLY - ARROW FUNCTIONS DO NOT NEED PARAMETER INPUTS FOR args AND/OR callbackScope. THIS IS WHY THEY'RE MORE CONVENIENT THAN function() 
                 this.sound.removeByKey('menuMusic'); 
             });
             return;
@@ -214,6 +218,7 @@ class Game extends Phaser.Scene{
                 //boss.setVisible(true); //Make the boss invisible. Only make it visible again after waves have been complete
                 //boss.setActive(true); //Disable the boss from having it's logic computed
                 this.victoryText.visible = true;
+                this.winSound.play(); //Play game over win sound
                 gameOver = true;
             }
             else{
@@ -273,6 +278,7 @@ function lungsHitCallback(lungsHit, enemyHit){
         enemyHit.setActive(false).setVisible(false);
         // Show damage to the lungs
         lungsHit.setTint(0xff0000);
+        this.loseSound.play(); //Play game over lose sound
         this.gameOverText.visible = true;
         gameOver = true;
     }

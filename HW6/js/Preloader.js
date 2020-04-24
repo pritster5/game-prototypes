@@ -25,6 +25,8 @@ class Preloader extends Phaser.Scene{
         this.load.image('titleText','assets/LungDefender.png');
         // Load Audio assets
         this.load.audio('menuMusic', 'assets/menuMusic.mp3');
+        this.load.audio('winSound', 'assets/breathSound.mp3');
+        this.load.audio('loseSound', 'assets/heartBeatSound.mp3');
     }
     create(){
         var bg = this.add.image(0,0, 'loadingBG').setOrigin(0,0);

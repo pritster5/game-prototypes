@@ -21,21 +21,21 @@ class MainMenu extends Phaser.Scene{
 
         var title = this.add.image(config.width/2, config.height/6, 'titleText');
         var startGameBtn = this.add.image(config.width/2, config.height/2.0, 'playBtn').setScale(1,1).setInteractive();        
-        startGameBtn.on('pointerdown', function(){
+        startGameBtn.on('pointerdown', ()=>{
             startGameBtn.setTexture('playBtnPressed'); // Change btn to pressed state
-        }, this);
-        startGameBtn.on('pointerup', function(){
+        });
+        startGameBtn.on('pointerup', ()=>{
             startGameBtn.setTexture('playBtn'); // Pop btn back up
             this.scene.start("playGame"); // start new scene
-        }, this);
+        });
 
         var controlsBtn = this.add.image(config.width/2, config.height/2.6, 'controlsBtn').setScale(1,1).setInteractive();
-        controlsBtn.on('pointerdown', function(){
+        controlsBtn.on('pointerdown', ()=>{
             controlsBtn.setTexture('controlsBtnPressed'); // Change btn to pressed state
-        }, this);
-        controlsBtn.on('pointerup', function(){
+        });
+        controlsBtn.on('pointerup', ()=>{
             controlsBtn.setTexture('controlsBtn'); // Pop btn back up
             this.scene.start("controlsGame"); // start new scene
-        }, this);
+        });
     }    
 }
