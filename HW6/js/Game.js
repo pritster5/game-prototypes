@@ -35,7 +35,7 @@ var Projectile = new Phaser.Class({
         this.x += this.xSpeed * delta;
         this.y += this.ySpeed * delta;
         this.born += delta;
-        if (this.born > 5000){ //Removes bullets from sceen if the time between the current one and last spawned is more than 5 s
+        if (this.born > 3000){ //Removes bullets from sceen if the time between the current one and last spawned is more than 3 s
             this.setActive(false);
             this.setVisible(false);
         }
@@ -186,11 +186,13 @@ class Game extends Phaser.Scene{
         this.physics.add.collider(boss, lungsBG, lungsHitCallback, null, this);
 
         var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
+        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5) //Wave start text
+        this.introText.visible = false;
         this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
         this.nextWaveText.visible = false;
         this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
         this.gameOverText.visible = false;
-        this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN :D\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
+        this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
         this.victoryText.visible = false;
     }
 
