@@ -248,7 +248,8 @@ function enemyHitCallback(enemyHit, bulletHit){
         enemyHit.body.moves = false;
         // Make projectile stick to the enemy
         bulletHit.body.moves = false;
-        bulletHit.setActive(false);
+        bulletHit.body.checkCollision.none = false;
+        bulletHit.setActive(false).setVisible(false);
     }
 }
 
