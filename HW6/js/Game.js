@@ -44,7 +44,7 @@ var Projectile = new Phaser.Class({
 });
 
 var currentWave = 1; //Start on the first wave
-var maxWave = 5; //The enemy spawn loop terminates after the third wave
+var maxWave = 4; //The enemy spawn loop terminates after the third wave
 var gameOver = false;
 var aimer;
 var enemyGrunts; //Actual sprite for enemyGrunt group
@@ -214,7 +214,7 @@ class Game extends Phaser.Scene{
         }
 
         if (gruntAmount === 0){
-            if(currentWave === maxWave){ //If we're on wave 3 (max) and gruntAmount is zero, that means the player has defeated all waves
+            if(currentWave >= maxWave){ //If we're on wave 3 (max) and gruntAmount is zero, that means the player has defeated all waves
                 //boss.setVisible(true); //Make the boss invisible. Only make it visible again after waves have been complete
                 //boss.setActive(true); //Disable the boss from having it's logic computed
                 this.victoryText.visible = true;
