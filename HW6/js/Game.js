@@ -246,10 +246,7 @@ function enemyHitCallback(enemyHit, bulletHit){
     // If hit is true, disable both the projectile and the enemy
     if (bulletHit.active === true && enemyHit.active === true){
         enemyHit.body.moves = false;
-        // Make projectile stick to the enemy
-        bulletHit.body.moves = false;
-        bulletHit.body.checkCollision.none = false;
-        bulletHit.setActive(false).setVisible(false);
+        bulletHit.destroy() //Delete the bullet on hit
     }
 }
 
