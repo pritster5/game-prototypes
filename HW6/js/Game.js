@@ -44,16 +44,18 @@ var Projectile = new Phaser.Class({
 });
 
 var currentWave = 1; //Start on the first wave
-var maxWave = 3; //The enemy spawn loop terminates after the third wave
+var maxWave = 2; //The enemy spawn loop terminates after the third wave
 var gameOver = false;
 var aimer;
 var enemyGrunts; //Actual sprite for enemyGrunt group
 var gruntMinSpeed = 10;
 var gruntMaxSpeed = 40;
-var gruntAmount = currentWave * 2; //Amount to spawn
+var gruntAmount = currentWave * 1; //Amount to spawn
 var projectile;
 var lungsBG;
 var boss;
+var bossHealth = 100; //One boss is 10x tougher than one grunt
+var bossSpeed = 30;
 var player;
 var playerAmmoCnt = 3;
 var playerBullets;
@@ -81,7 +83,6 @@ class Game extends Phaser.Scene{
         // WORLD BUILDING
         // Create world bounds
         this.physics.world.setBounds(0, 0, 512, 512);
-
         this.background = this.add.tileSprite(0,0, config.width, config.height, 'gameBG').setOrigin(0,0);
         lungsBG = this.physics.add.image(config.width/2, config.height*1.05, 'lungs').setScale(2,2).setImmovable();
         //Add ammo wheel to collect antibodies from
@@ -166,11 +167,14 @@ class Game extends Phaser.Scene{
             }
         }, this);
 
-        var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
+        var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 8};
+        var guiStyle = {font: "16px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 4};
         this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5) //Wave start text
         this.introText.visible = false;
         this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
         this.nextWaveText.visible = false;
+        this.bossWaveText = this.add.text(config.width / 2, config.height / 2, 'HERE COMES THE BOSS...\nTHIS IS IT!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
+        this.bossWaveText.visible = false;
         this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
         this.gameOverText.visible = false;
         this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
@@ -178,20 +182,25 @@ class Game extends Phaser.Scene{
 
         //Initializes enemyGrunts group
         this.introText.visible = true;
-        enemyGrunts = this.physics.add.group();        
+        enemyGrunts = this.physics.add.group(); 
+        //Wave 1 Logic       
         this.time.delayedCall(1000 * 3, ()=>{
-            this.introText.visible = false; //THIS LINE IS BUGGED
+            this.introText.visible = false; //Hides the intro text after spawning the first wave
             this.spawnBaddies(); //Spawn first wave
         });
 
-        boss = this.physics.add.image(config.width / 2, config.height / 2, 'boss'); // Spawn the boss
+        boss = this.physics.add.image(config.width / 2, config.height-512, 'boss'); // Spawn the boss
         boss.setVisible(false); //Make the boss invisible. Only make it visible again after waves have been complete
         boss.setActive(false); //Disable the boss from having it's logic computed
+        boss.setVelocity(0, bossSpeed); //Set the bosses y-axis velocity once it spawns
+        boss.body.moves = false; //The boss must be still until the player beats all waves
 
         //Give the player ammo if they overlap with the B-Cell
         this.physics.add.overlap(player, bCellAmmo, ammoCallback, null, this);
         //Disable the enemy grunts when hit with a antibody
         this.physics.add.collider(enemyGrunts, playerBullets, enemyHitCallback, null, this);
+        //Reduce the boss's health when hit by player bullets
+        this.physics.add.collider(boss, playerBullets, bossHitCallback, null, this);
         //Completely kill the grunts if they touch the player after being antibodied
         this.physics.add.overlap(player, enemyGrunts, collectGruntCallback, null, this);
         //Disable the grunts when they touch the lungs, then tint the lungs
@@ -206,7 +215,6 @@ class Game extends Phaser.Scene{
 
     update(time){
         if (gameOver == true){ //Things that need to happen on game over REGARDLESS of win/lose state go here
-            this.physics.pause(); //Pause the physics
             this.time.delayedCall(1000 * 1, () => { //ES6 ONLY - ARROW FUNCTIONS DO NOT NEED PARAMETER INPUTS FOR args AND/OR callbackScope. THIS IS WHY THEY'RE MORE CONVENIENT THAN function() 
                 this.sound.removeByKey('menuMusic'); 
             });
@@ -214,24 +222,35 @@ class Game extends Phaser.Scene{
         }
 
         if (gruntAmount === 0){
-            if(currentWave >= maxWave){ //If we're on wave 3 (max) and gruntAmount is zero, that means the player has defeated all waves
-                //boss.setVisible(true); //Make the boss invisible. Only make it visible again after waves have been complete
-                //boss.setActive(true); //Disable the boss from having it's logic computed
-                this.victoryText.visible = true;
-                this.winSound.play(); //Play game over win sound
-                gameOver = true;
+            if(currentWave === maxWave){ //If we're on last wave and gruntAmount is zero, that means the player has defeated all waves, so spawn the boss
+                if (boss.visible == false){ //If the boss hasn't been spawned yet, do it. Otherwise skip this branch every frame. We only want to run that branch once.
+                    this.bossWaveText.visible = true;
+                    this.time.delayedCall(1000 * 3, () => {
+                        this.bossWaveText.visible = false;
+                        boss.setVisible(true); //Make the boss visible now that the player has beaten all waves
+                        boss.setActive(true); //Enable the boss from having it's logic computed
+                        boss.body.moves = true;
+                    }); 
+                }
+                
+                if (bossHealth === 0){
+                    boss.setTint(0xff0000);
+                    boss.setVelocity(0, -60);
+                    this.victoryText.visible = true;
+                    this.winSound.play(); //Play game over win sound
+                    gameOver = true;
+                }
             }
             else{
                 currentWave += 1; //Increment the wave amount to make more baddies spawn
-                gruntAmount = currentWave * 2
+                gruntAmount = currentWave * 1;
                 this.nextWaveText.visible = true; //Tell the player the next wave is coming and then soawn the, after 3 secs
                 this.time.delayedCall(1000 * 3, () => {
-                    this.nextWaveText.visible = false; //THIS LINE IS BUGGED
+                    this.nextWaveText.visible = false;
                     this.spawnBaddies(); //Spawn next wave
                 });
             }
         }
-
         this.background.tilePositionY += 0.15; //Scroll the background for a parallax feel
         bCellAmmo.angle += 1; //Rotate the B-Cell's for a nice ammo wheel effect
         // Rotates player to face towards the mouse cursor
@@ -246,6 +265,13 @@ function enemyHitCallback(enemyHit, bulletHit){
     // If hit is true, disable both the projectile and the enemy
     if (bulletHit.active === true && enemyHit.active === true){
         enemyHit.body.moves = false;
+        bulletHit.destroy() //Delete the bullet on hit
+    }
+}
+
+function bossHitCallback(bossHit, bulletHit){
+    if (bulletHit.active === true){
+        bossHealth -= 5; //Reduce the boss's health
         bulletHit.destroy() //Delete the bullet on hit
     }
 }
