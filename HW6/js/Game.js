@@ -35,7 +35,7 @@ var Projectile = new Phaser.Class({
         this.x += this.xSpeed * delta;
         this.y += this.ySpeed * delta;
         this.born += delta;
-        if (this.born > 3000){ //Removes bullets from sceen if the time between the current one and last spawned is more than 3 s
+        if (this.born > 1000){ //Removes bullets from sceen if the time between the current one and last spawned is more than 3 s
             this.setActive(false);
             this.setVisible(false);
         }
@@ -47,20 +47,24 @@ var currentWave = 1; //Start on the first wave
 var maxWave = 2; //The enemy spawn loop terminates after the third wave
 var gameOver = false;
 var aimer;
-var enemyGrunts; //Actual sprite for enemyGrunt group
-var gruntMinSpeed = 10;
-var gruntMaxSpeed = 40;
+var enemyGrunts; //Physics Group for enemy grunts
+var gruntMinSpeed = 20;
+var gruntMaxSpeed = 50;
 var gruntAmount = currentWave * 1; //Amount to spawn
 var projectile;
 var lungsBG;
-var boss;
+var boss; //Boss physics image
 var bossHealth = 100; //One boss is 10x tougher than one grunt
 var bossSpeed = 30;
-var player;
-var playerAmmoCnt = 3;
-var playerBullets;
+var player; //Player physics image
+var playerAmmoCnt = 3; //Player Ammo Count
+var playerBullets; //Bullets Physics Group
+var playerMoney = 0; //Amount of money player has collected 
 var bCellAmmo;
 var bCellAmmoCnt = 5;
+var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 8};
+var waveStatStyle = {font: "16px Roboto", fill: '#ed1818', stroke: '#000', align:'left', strokeThickness: 4};
+var playerStatStyle = {font: "16px Roboto", fill: '#ed1818', stroke: '#000', align:'right', strokeThickness: 4};
 class Game extends Phaser.Scene{
     constructor(){
         super("playGame");
@@ -167,18 +171,21 @@ class Game extends Phaser.Scene{
             }
         }, this);
 
-        var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 8};
-        var guiStyle = {font: "16px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 4};
-        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5) //Wave start text
+        //TEXT
+        //Event Related Text
+        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5); //Wave start text
         this.introText.visible = false;
-        this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
+        this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
         this.nextWaveText.visible = false;
-        this.bossWaveText = this.add.text(config.width / 2, config.height / 2, 'HERE COMES THE BOSS...\nTHIS IS IT!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
+        this.bossWaveText = this.add.text(config.width / 2, config.height / 2, 'HERE COMES THE BOSS...\nTHIS IS IT!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
         this.bossWaveText.visible = false;
         this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
         this.gameOverText.visible = false;
         this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
         this.victoryText.visible = false;
+        //GUI Related Text
+        this.currentWaveText = this.add.text(4,4, 'Current Wave: ' + currentWave + '\nEnemies Left: ' + gruntAmount, waveStatStyle);
+        this.playerStatsText = this.add.text(config.width - 92, 4, 'Calories: ' + playerMoney, playerStatStyle);
 
         //Initializes enemyGrunts group
         this.introText.visible = true;
@@ -215,6 +222,9 @@ class Game extends Phaser.Scene{
 
     update(time){
         if (gameOver == true){ //Things that need to happen on game over REGARDLESS of win/lose state go here
+            playerAmmoCnt = 0; //Disable Player Ammo
+            bCellAmmoCnt = 0; //Disable Ammo Wheel
+            player.body.moves = false; //Disable player movement
             this.time.delayedCall(1000 * 1, () => { //ES6 ONLY - ARROW FUNCTIONS DO NOT NEED PARAMETER INPUTS FOR args AND/OR callbackScope. THIS IS WHY THEY'RE MORE CONVENIENT THAN function() 
                 this.sound.removeByKey('menuMusic'); 
             });
@@ -244,6 +254,7 @@ class Game extends Phaser.Scene{
             else{
                 currentWave += 1; //Increment the wave amount to make more baddies spawn
                 gruntAmount = currentWave * 1;
+                playerMoney += 10; //Add 10 money just for beating the wave
                 this.nextWaveText.visible = true; //Tell the player the next wave is coming and then soawn the, after 3 secs
                 this.time.delayedCall(1000 * 3, () => {
                     this.nextWaveText.visible = false;
@@ -251,6 +262,9 @@ class Game extends Phaser.Scene{
                 });
             }
         }
+
+        this.currentWaveText.setText('Current Wave: ' + currentWave + '\nEnemies Left: ' + gruntAmount);
+        this.playerStatsText.setText('Calories: ' + playerMoney);
         this.background.tilePositionY += 0.15; //Scroll the background for a parallax feel
         bCellAmmo.angle += 1; //Rotate the B-Cell's for a nice ammo wheel effect
         // Rotates player to face towards the mouse cursor
@@ -265,22 +279,23 @@ function enemyHitCallback(enemyHit, bulletHit){
     // If hit is true, disable both the projectile and the enemy
     if (bulletHit.active === true && enemyHit.active === true){
         enemyHit.body.moves = false;
-        bulletHit.destroy() //Delete the bullet on hit
+        bulletHit.destroy(); //Delete the bullet on hit
     }
 }
 
 function bossHitCallback(bossHit, bulletHit){
     if (bulletHit.active === true){
-        bossHealth -= 5; //Reduce the boss's health
-        bulletHit.destroy() //Delete the bullet on hit
+        bossHealth -= 10; //Reduce the boss's health
+        bulletHit.destroy(); //Delete the bullet on hit
     }
 }
 
 function collectGruntCallback(player, enemyHit){
     // If the enemy has already been anti-bodied, we can kill them
     if (enemyHit.body.moves === false){
-        enemyGrunts.remove(enemyHit, true, true); //Destroy the hitgrunt Completely
+        enemyHit.destroy(); //Destroy the hitgrunt Completely
         gruntAmount -= 1;
+        playerMoney += 5; //Give the player 5 money every time the player collects a grunt
     }
 }
 
