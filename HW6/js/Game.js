@@ -35,7 +35,7 @@ var Projectile = new Phaser.Class({
         this.x += this.xSpeed * delta;
         this.y += this.ySpeed * delta;
         this.born += delta;
-        if (this.born > 1000){ //Removes bullets from sceen if the time between the current one and last spawned is more than 3 s
+        if (this.born > 3000){ //Removes bullets from sceen if the time between the current one and last spawned is more than 3 s
             this.setActive(false);
             this.setVisible(false);
         }
@@ -44,13 +44,13 @@ var Projectile = new Phaser.Class({
 });
 
 var currentWave = 1; //Start on the first wave
-var maxWave = 2; //The enemy spawn loop terminates after the third wave
+var maxWave = 3; //The enemy spawn loop terminates after the third wave
 var gameOver = false;
 var aimer;
 var enemyGrunts; //Physics Group for enemy grunts
 var gruntMinSpeed = 20;
 var gruntMaxSpeed = 50;
-var gruntAmount = currentWave * 1; //Amount to spawn
+var gruntAmount = currentWave * 2; //Amount to spawn
 var projectile;
 var lungsBG;
 var boss; //Boss physics image
@@ -213,7 +213,7 @@ class Game extends Phaser.Scene{
         //Disable the grunts when they touch the lungs, then tint the lungs
         this.physics.add.collider(enemyGrunts, lungsBG, lungsHitCallback, null, this);
         //Game over when the boss hits the lungs
-        this.physics.add.collider(boss, lungsBG, lungsHitCallback, null, this);
+        this.physics.add.collider(lungsBG, boss, lungsHitCallback, null, this);
 
         //Audio
         this.winSound = this.sound.add("winSound");
@@ -253,7 +253,7 @@ class Game extends Phaser.Scene{
             }
             else{
                 currentWave += 1; //Increment the wave amount to make more baddies spawn
-                gruntAmount = currentWave * 1;
+                gruntAmount = currentWave * 2; //Spawn twice as many grunts next wave
                 playerMoney += 10; //Add 10 money just for beating the wave
                 this.nextWaveText.visible = true; //Tell the player the next wave is coming and then soawn the, after 3 secs
                 this.time.delayedCall(1000 * 3, () => {
@@ -314,7 +314,7 @@ function ammoCallback(player, bCellAmmo){
 function lungsHitCallback(lungsHit, enemyHit){
     // If hit is true, disable both the projectile and the enemy
     if (lungsHit.active === true && enemyHit.active === true){
-        enemyHit.setActive(false).setVisible(false);
+        enemyHit.setActive(false);
         // Show damage to the lungs
         lungsHit.setTint(0xff0000);
         this.loseSound.play(); //Play game over lose sound
