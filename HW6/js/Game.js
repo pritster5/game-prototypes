@@ -179,8 +179,6 @@ class Game extends Phaser.Scene{
         this.nextWaveText.visible = false;
         this.bossWaveText = this.add.text(config.width / 2, config.height / 2, 'HERE COMES THE BOSS...\nTHIS IS IT!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
         this.bossWaveText.visible = false;
-        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
-        this.gameOverText.visible = false;
         this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
         this.victoryText.visible = false;
         //GUI Related Text
@@ -201,6 +199,9 @@ class Game extends Phaser.Scene{
         boss.setActive(false); //Disable the boss from having it's logic computed
         boss.setVelocity(0, bossSpeed); //Set the bosses y-axis velocity once it spawns
         boss.body.moves = false; //The boss must be still until the player beats all waves
+        //Game Over Text
+        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
+        this.gameOverText.visible = false;
 
         //Give the player ammo if they overlap with the B-Cell
         this.physics.add.overlap(player, bCellAmmo, ammoCallback, null, this);
