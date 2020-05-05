@@ -3,7 +3,7 @@ class Preloader extends Phaser.Scene{
         super("preloader");
     }
     preload(){
-        // Load Visual assets - ONLY NEEDED ONCE FOR THE ENTIRE GAME. 
+    // Load Visual assets - ONLY NEEDED ONCE FOR THE ENTIRE GAME. 
         // I.e. THIS FUNCTION ONLY NEEDS TO BE IN ONE SCENE FILE 
         this.load.image('playBtn', 'assets/PlayBtn.png');
         this.load.image('playBtnPressed', 'assets/PlayBtnPressed.png');
@@ -23,10 +23,16 @@ class Preloader extends Phaser.Scene{
         this.load.image('bCell','assets/B_Cell.png');
         this.load.image('bCellEmpty','assets/B_Cell_Empty.png');
         this.load.image('titleText','assets/LungDefender.png');
-        // Load Audio assets
+    // Load Audio assets
         this.load.audio('menuMusic', 'assets/menuMusic.mp3');
         this.load.audio('winSound', 'assets/breathSound.mp3');
         this.load.audio('loseSound', 'assets/heartBeatSound.mp3');
+        //Combat SFX
+        this.load.audio('pewPew', 'assets/pewpew.mp3');
+        this.load.audio('gruntDeath', 'assets/gruntDeath.mp3');
+        this.load.audio('bossSpawn', 'assets/bossSpawn.mp3');
+        this.load.audio('bossDeath', 'assets/bossDeath.mp3');
+        this.load.audio('bossHit', 'assets/bossHit.mp3');
     }
     create(){
         var bg = this.add.image(0,0, 'loadingBG').setOrigin(0,0);

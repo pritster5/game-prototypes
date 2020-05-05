@@ -55,7 +55,7 @@ var projectile;
 var lungsBG;
 var boss; //Boss physics image
 var bossHealth = 100; //One boss is 10x tougher than one grunt
-var bossSpeed = 30;
+var bossSpeed = 25;
 var player; //Player physics image
 var playerAmmoCnt = 3; //Player Ammo Count
 var playerBullets; //Bullets Physics Group
@@ -108,16 +108,16 @@ class Game extends Phaser.Scene{
     
         // Move on press
         this.input.keyboard.on('keydown_W', (event)=>{
-            player.setAccelerationY(-500);
+            player.setAccelerationY(-400);
         });
         this.input.keyboard.on('keydown_S', (event)=>{
-            player.setAccelerationY(500);
+            player.setAccelerationY(400);
         });
         this.input.keyboard.on('keydown_A', (event)=>{
-            player.setAccelerationX(-500);
+            player.setAccelerationX(-400);
         });
         this.input.keyboard.on('keydown_D', (event)=>{
-            player.setAccelerationX(500);
+            player.setAccelerationX(400);
         });
     
         // Stop moving on release. Since it's acceleration, you will slow down gradually
@@ -137,6 +137,7 @@ class Game extends Phaser.Scene{
             if (moveKeys['left'].isUp)
                 player.setAccelerationX(0);
         });
+        this.shootSound = this.sound.add("pewPew"); //Add sound for shooting
         // Shoot whenever the left mouse button is pressed
         this.input.on('pointerdown', (pointer, time, lastFired)=>{
             if (playerAmmoCnt > 0){
@@ -145,6 +146,7 @@ class Game extends Phaser.Scene{
                     projectile = playerBullets.get().setActive(true).setVisible(true);
                     // Checks if projectile is actually initialized
                     if (projectile){ 
+                        this.shootSound.play();
                         projectile.fire(player, aimer);
                     }  
                 }
@@ -194,11 +196,12 @@ class Game extends Phaser.Scene{
             this.spawnBaddies(); //Spawn first wave
         });
 
-        boss = this.physics.add.image(config.width / 2, config.height-512, 'boss'); // Spawn the boss
+        boss = this.physics.add.image(config.width / 2, config.height-560, 'boss'); // Spawn the boss
         boss.setVisible(false); //Make the boss invisible. Only make it visible again after waves have been complete
         boss.setActive(false); //Disable the boss from having it's logic computed
         boss.setVelocity(0, bossSpeed); //Set the bosses y-axis velocity once it spawns
         boss.body.moves = false; //The boss must be still until the player beats all waves
+        boss.body.enable = false; //Disable the boss from being involved in the physics sim until it spawns
         //Game Over Text
         this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
         this.gameOverText.visible = false;
@@ -208,7 +211,7 @@ class Game extends Phaser.Scene{
         //Disable the enemy grunts when hit with a antibody
         this.physics.add.collider(enemyGrunts, playerBullets, enemyHitCallback, null, this);
         //Reduce the boss's health when hit by player bullets
-        this.physics.add.collider(boss, playerBullets, bossHitCallback, null, this);
+        this.physics.add.overlap(boss, playerBullets, bossHitCallback, null, this);
         //Completely kill the grunts if they touch the player after being antibodied
         this.physics.add.overlap(player, enemyGrunts, collectGruntCallback, null, this);
         //Disable the grunts when they touch the lungs, then tint the lungs
@@ -216,9 +219,14 @@ class Game extends Phaser.Scene{
         //Game over when the boss hits the lungs
         this.physics.add.collider(lungsBG, boss, lungsHitCallback, null, this);
 
-        //Audio
+    //Audio
         this.winSound = this.sound.add("winSound");
-        this.loseSound = this.sound.add("loseSound");   
+        this.loseSound = this.sound.add("loseSound");
+        //Enemy Audio
+        this.gruntDeathSound = this.sound.add("gruntDeath");
+        this.bossSpawnSound = this.sound.add("bossSpawn");
+        this.bossDeathSound = this.sound.add("bossDeath");
+        this.bossHitSound = this.sound.add("bossHit");    
     }
 
     update(time){
@@ -236,15 +244,18 @@ class Game extends Phaser.Scene{
             if(currentWave === maxWave){ //If we're on last wave and gruntAmount is zero, that means the player has defeated all waves, so spawn the boss
                 if (boss.visible == false){ //If the boss hasn't been spawned yet, do it. Otherwise skip this branch every frame. We only want to run that branch once.
                     this.bossWaveText.visible = true;
+                    this.bossSpawnSound.play();
                     this.time.delayedCall(1000 * 3, () => {
                         this.bossWaveText.visible = false;
                         boss.setVisible(true); //Make the boss visible now that the player has beaten all waves
                         boss.setActive(true); //Enable the boss from having it's logic computed
-                        boss.body.moves = true;
+                        boss.body.enable = true; //Enable the boss
+                        boss.body.moves = true; //Allow it to move
                     }); 
                 }
                 
-                if (bossHealth === 0){
+                if (bossHealth <= 0){
+                    this.bossDeathSound.play();
                     boss.setTint(0xff0000);
                     boss.setVelocity(0, -60);
                     this.victoryText.visible = true;
@@ -279,6 +290,7 @@ class Game extends Phaser.Scene{
 function enemyHitCallback(enemyHit, bulletHit){
     // If hit is true, disable both the projectile and the enemy
     if (bulletHit.active === true && enemyHit.active === true){
+        this.gruntDeathSound.play();
         enemyHit.body.moves = false;
         bulletHit.destroy(); //Delete the bullet on hit
     }
@@ -286,7 +298,8 @@ function enemyHitCallback(enemyHit, bulletHit){
 
 function bossHitCallback(bossHit, bulletHit){
     if (bulletHit.active === true){
-        bossHealth -= 10; //Reduce the boss's health
+        this.bossHitSound.play();
+        bossHealth -= 5; //Reduce the boss's health
         bulletHit.destroy(); //Delete the bullet on hit
     }
 }
