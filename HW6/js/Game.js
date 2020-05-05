@@ -223,7 +223,8 @@ class Game extends Phaser.Scene{
         this.winSound = this.sound.add("winSound");
         this.loseSound = this.sound.add("loseSound");
         //Enemy Audio
-        this.gruntDeathSound = this.sound.add("gruntDeath");
+        this.gruntHitSound = this.sound.add("gruntHit");
+        this.collectGruntSound = this.sound.add("collectGrunt");
         this.bossSpawnSound = this.sound.add("bossSpawn");
         this.bossDeathSound = this.sound.add("bossDeath");
         this.bossHitSound = this.sound.add("bossHit");    
@@ -290,7 +291,7 @@ class Game extends Phaser.Scene{
 function enemyHitCallback(enemyHit, bulletHit){
     // If hit is true, disable both the projectile and the enemy
     if (bulletHit.active === true && enemyHit.active === true){
-        this.gruntDeathSound.play();
+        this.gruntHitSound.play();
         enemyHit.body.moves = false;
         bulletHit.destroy(); //Delete the bullet on hit
     }
@@ -307,6 +308,7 @@ function bossHitCallback(bossHit, bulletHit){
 function collectGruntCallback(player, enemyHit){
     // If the enemy has already been anti-bodied, we can kill them
     if (enemyHit.body.moves === false){
+        this.collectGruntSound.play();
         enemyHit.destroy(); //Destroy the hitgrunt Completely
         gruntAmount -= 1;
         playerMoney += 5; //Give the player 5 money every time the player collects a grunt

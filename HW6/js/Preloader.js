@@ -28,8 +28,9 @@ class Preloader extends Phaser.Scene{
         this.load.audio('winSound', 'assets/breathSound.mp3');
         this.load.audio('loseSound', 'assets/heartBeatSound.mp3');
         //Combat SFX
-        this.load.audio('pewPew', 'assets/pewpew.mp3');
-        this.load.audio('gruntDeath', 'assets/gruntDeath.mp3');
+        this.load.audio('pewPew', 'assets/pewPew.mp3');
+        this.load.audio('gruntHit', 'assets/gruntHit.mp3');
+        this.load.audio('collectGrunt', 'assets/collectGrunt.mp3');
         this.load.audio('bossSpawn', 'assets/bossSpawn.mp3');
         this.load.audio('bossDeath', 'assets/bossDeath.mp3');
         this.load.audio('bossHit', 'assets/bossHit.mp3');
