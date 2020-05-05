@@ -185,7 +185,7 @@ class Game extends Phaser.Scene{
         this.victoryText.visible = false;
         //GUI Related Text
         this.currentWaveText = this.add.text(4,4, 'Current Wave: ' + currentWave + '\nEnemies Left: ' + gruntAmount, waveStatStyle);
-        this.playerStatsText = this.add.text(config.width - 92, 4, 'Calories: ' + playerMoney, playerStatStyle);
+        this.playerStatsText = this.add.text(config.width - 100, 4, 'Calories: ' + playerMoney + '\nAntibodies: ' + playerAmmoCnt, playerStatStyle);
 
         //Initializes enemyGrunts group
         this.introText.visible = true;
@@ -277,7 +277,7 @@ class Game extends Phaser.Scene{
         }
 
         this.currentWaveText.setText('Current Wave: ' + currentWave + '\nEnemies Left: ' + gruntAmount);
-        this.playerStatsText.setText('Calories: ' + playerMoney);
+        this.playerStatsText.setText('Calories: ' + playerMoney + '\nAntibodies: ' + playerAmmoCnt);
         this.background.tilePositionY += 0.15; //Scroll the background for a parallax feel
         bCellAmmo.angle += 1; //Rotate the B-Cell's for a nice ammo wheel effect
         // Rotates player to face towards the mouse cursor
