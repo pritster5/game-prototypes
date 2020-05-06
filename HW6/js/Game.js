@@ -307,7 +307,7 @@ class Game extends Phaser.Scene{
 
         if (gruntAmount === 0){
             if(currentWave === maxWave){ //If we're on last wave and gruntAmount is zero, that means the player has defeated all waves, so spawn the boss
-                if (boss.visible == false){ //If the boss hasn't been spawned yet, do it. Otherwise skip this branch every frame. We only want to run that branch once.
+                if (boss.visible == false){ //If the boss hasn't been spawned yet, do it. Otherwise skip this branch every frame. We only want to run this branch once.
                     this.bossWaveText.visible = true;
                     this.bossSpawnSound.play();
                     this.time.delayedCall(1000 * 3, () => {
