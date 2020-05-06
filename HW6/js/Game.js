@@ -44,24 +44,6 @@ var Projectile = new Phaser.Class({
 });
 
 var currentWave = 1; //Start on the first wave
-<<<<<<< HEAD
-var maxWave = 5; //The enemy spawn loop terminates after the third wave
-var gameOver = false;
-var aimer;
-var enemyGrunts; //Physics Group for enemy grunts
-var gruntMinSpeed = 30;
-var gruntMaxSpeed = 50;
-var gruntAmount = currentWave * 2; //Amount to spawn
-var projectile;
-var lungsBG;
-var boss; //Boss physics image
-var bossHealth = 150; //One boss is 10x tougher than one grunt
-var bossSpeed = 30;
-var player; //Player physics image
-var playerAmmoCnt = 3; //Player Ammo Count
-var playerBullets; //Bullets Physics Group
-var playerCalories = 0; //Amount of money player has collected 
-=======
 var maxWave = 3; //The enemy spawn loop terminates after the third wave
 var gameOver = false;
 var aimer;
@@ -75,13 +57,8 @@ var boss;
 var player;
 var playerAmmoCnt = 3;
 var playerBullets;
->>>>>>> parent of 2e7e3df... Update Game.js
 var bCellAmmo;
 var bCellAmmoCnt = 5;
-var textStyle = {font: "24px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 8};
-var waveStatStyle = {font: "16px Roboto", fill: '#ed1818', stroke: '#000', align:'left', strokeThickness: 4};
-var playerStatStyle = {font: "16px Roboto", fill: '#ed1818', stroke: '#000', align:'right', strokeThickness: 4};
-
 class Game extends Phaser.Scene{
     constructor(){
         super("playGame");
@@ -93,30 +70,10 @@ class Game extends Phaser.Scene{
         enemyGrunts.createMultiple({
             key: 'enemyGrunt', 
             repeat: gruntAmount - 1,
+            setXY: { x: 60, y: 0, stepX: 60 } 
         }) //Call the spawner
         enemyGrunts.children.iterate(function(child){
-            child.setPosition(Phaser.Math.Between(60, (config.width - 60)), 0); //Spawn each child at some random position across the top of the screen
-            child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed)); //Give each spawned child some random velovity within the bounds supplied
-        });
-    }
-
-    //Slowdown Grunt Ability
-    slowdownGruntAbility(){
-        enemyGrunts.children.iterate(function(child){
-            child.body.velocity.y /= 3; //Slowdown the y component velocities of every grunt by 66%  
-        });
-        this.time.delayedCall(1000 * 6, ()=>{
-            enemyGrunts.children.iterate(function(child){
-                child.body.velocity.y *= 3; //After 6 secs, reset the y component velocities of the grunts back to their original speed 
-            }); 
-        });
-    }
-
-    //Function to handle unlimited ammo ability
-    unlimitedAmmoAbility(){
-        playerAmmoCnt = 99; //Give the plyaer 99 antibodies (effectively unlimited given how fast players can click)
-        this.time.delayedCall(1000 * 3, ()=>{
-            playerAmmoCnt = 0; //After 3 secs, reset player antibodies to 0
+            child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed));
         });
     }
 
@@ -146,16 +103,16 @@ class Game extends Phaser.Scene{
     
         // Move on press
         this.input.keyboard.on('keydown_W', (event)=>{
-            player.setAccelerationY(-400);
+            player.setAccelerationY(-500);
         });
         this.input.keyboard.on('keydown_S', (event)=>{
-            player.setAccelerationY(400);
+            player.setAccelerationY(500);
         });
         this.input.keyboard.on('keydown_A', (event)=>{
-            player.setAccelerationX(-400);
+            player.setAccelerationX(-500);
         });
         this.input.keyboard.on('keydown_D', (event)=>{
-            player.setAccelerationX(400);
+            player.setAccelerationX(500);
         });
     
         // Stop moving on release. Since it's acceleration, you will slow down gradually
@@ -175,20 +132,18 @@ class Game extends Phaser.Scene{
             if (moveKeys['left'].isUp)
                 player.setAccelerationX(0);
         });
-        this.shootSound = this.sound.add("pewPew"); //Add sound for shooting
         // Shoot whenever the left mouse button is pressed
         this.input.on('pointerdown', (pointer, time, lastFired)=>{
             if (playerAmmoCnt > 0){
-                playerAmmoCnt -= 1;
-                // Get projectile from bullets group
-                projectile = playerBullets.get().setActive(true).setVisible(true);
-                // Checks if projectile is actually initialized
-                if (projectile){ 
-                    this.shootSound.play();
-                    projectile.fire(player, aimer);
-                }  
-            }
-        }, this);
+                    playerAmmoCnt -= 1;
+                    // Get projectile from bullets group
+                    projectile = playerBullets.get().setActive(true).setVisible(true);
+                    // Checks if projectile is actually initialized
+                    if (projectile){ 
+                        projectile.fire(player, aimer);
+                    }  
+                }
+            }, this);
     
         // Sync up the aimer to the mouse cursor/pointer
         // Pointer lock will only work after mousedown
@@ -211,72 +166,15 @@ class Game extends Phaser.Scene{
             }
         }, this);
 
-<<<<<<< HEAD
-        //TEXT
-        //Event Related Text
-        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5); //Wave start text
-=======
         var textStyle = {font: "32px Roboto", fill: '#ed1818', stroke: '#000', align:'center', strokeThickness: 10};
         this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5) //Wave start text
->>>>>>> parent of 2e7e3df... Update Game.js
         this.introText.visible = false;
-        this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
+        this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5) //Wave incoming text
         this.nextWaveText.visible = false;
-<<<<<<< HEAD
-        this.bossWaveText = this.add.text(config.width / 2, config.height / 2, 'HERE COMES THE BOSS...\nTHIS IS IT!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
-        this.bossWaveText.visible = false;
-=======
         this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
         this.gameOverText.visible = false;
->>>>>>> parent of 2e7e3df... Update Game.js
         this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
         this.victoryText.visible = false;
-        //GUI Related Text
-        this.currentWaveText = this.add.text(4,4, 'Current Wave: ' + currentWave + '\nEnemies Left: ' + gruntAmount, waveStatStyle);
-        this.playerStatsText = this.add.text(config.width - 106, 4, 'Calories: ' + playerCalories + '\nAntibodies: ' + playerAmmoCnt, playerStatStyle);
-        //Ability Related Text
-        this.abilityOneText = this.add.text(config.width / 2, config.height / 2, 'All viruses move at half speed for 6 secs!', textStyle).setOrigin(0.5, 0.5);
-        this.abilityOneText.visible = false;
-        this.abilityTwoText = this.add.text(config.width / 2, config.height / 2, 'Unlimited Antibodies for 3 seconds!', textStyle).setOrigin(0.5, 0.5); //Wave start text
-        this.abilityTwoText.visible = false;
-        this.calorieText = this.add.text(config.width / 2, config.height / 2, 'Not enough calories! :(', textStyle).setOrigin(0.5, 0.5);
-        this.calorieText.visible = false;
-
-        // Slow Grunt Ability Event Caller
-        this.input.keyboard.on('keydown_ONE', (event)=>{
-            if (playerCalories >= 30){
-                this.abilityOneText.visible = true; //Let the player know they activated the ability
-                this.time.delayedCall(1000 * 1.5, ()=>{
-                    this.abilityOneText.visible = false; //Make the text disappear and then grant the ability
-                });
-                this.slowdownGruntAbility(); //Call the slowdownGruntAbility to cut velocity of all grunts by 50%
-                playerCalories -= 30; //Deduct 40 calories from the player for spending it on the ability
-            }
-            else{
-                this.calorieText.visible = true; //Notify players that they don't have enough calories to purchase the ability
-                this.time.delayedCall(1000 * 0.75, ()=>{
-                    this.calorieText.visible = false; //Then make the notification disappear
-                });
-            }
-        });
-
-        // Unlimited Ammo Ability Event Caller
-        this.input.keyboard.on('keydown_TWO', (event)=>{
-            if (playerCalories >= 60){
-                this.abilityTwoText.visible = true; //Let the player know they activated the ability
-                this.time.delayedCall(1000 * 1.5, ()=>{
-                    this.abilityTwoText.visible = false; //Make the text disappear and then grant the ability
-                });
-                this.unlimitedAmmoAbility(); //Call the unlimited ammo ability to modify player antibody counts
-                playerCalories -= 60; //Deduct 60 calories from the player for spending it on the ability
-            }
-            else{
-                this.calorieText.visible = true; //Notify players that they don't have enough calories to purchase the ability
-                this.time.delayedCall(1000 * 0.75, ()=>{
-                    this.calorieText.visible = false; //Then make the notification disappear
-                });
-            }
-        });
 
         //Initializes enemyGrunts group
         this.introText.visible = true;
@@ -286,58 +184,29 @@ class Game extends Phaser.Scene{
             this.spawnBaddies(); //Spawn first wave
         });
 
-<<<<<<< HEAD
-        boss = this.physics.add.image(config.width / 2, config.height-560, 'boss'); // Spawn the boss
-        boss.setVisible(false); //Make the boss invisible. Only make it visible again after waves have been complete
-        boss.setActive(false); //Disable the boss from having it's logic computed
-        boss.setVelocity(0, bossSpeed); //Set the bosses y-axis velocity once it spawns
-        boss.body.moves = false; //The boss must be still until the player beats all waves
-        boss.body.enable = false; //Disable the boss from being involved in the physics sim until it spawns
-        //Game Over Text
-        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
-        this.gameOverText.visible = false;
-=======
         boss = this.physics.add.image(config.width / 2, config.height / 2, 'boss'); // Spawn the boss
         boss.setVisible(false); //Make the boss invisible. Only make it visible again after waves have been complete
         boss.setActive(false); //Disable the boss from having it's logic computed
->>>>>>> parent of 2e7e3df... Update Game.js
 
         //Give the player ammo if they overlap with the B-Cell
         this.physics.add.overlap(player, bCellAmmo, ammoCallback, null, this);
         //Disable the enemy grunts when hit with a antibody
         this.physics.add.collider(enemyGrunts, playerBullets, enemyHitCallback, null, this);
-<<<<<<< HEAD
-        //Reduce the boss's health when hit by player bullets
-        this.physics.add.overlap(boss, playerBullets, bossHitCallback, null, this);
-=======
->>>>>>> parent of 2e7e3df... Update Game.js
         //Completely kill the grunts if they touch the player after being antibodied
         this.physics.add.overlap(player, enemyGrunts, collectGruntCallback, null, this);
         //Disable the grunts when they touch the lungs, then tint the lungs
         this.physics.add.collider(enemyGrunts, lungsBG, lungsHitCallback, null, this);
         //Game over when the boss hits the lungs
-        this.physics.add.collider(lungsBG, boss, lungsHitCallback, null, this);
+        this.physics.add.collider(boss, lungsBG, lungsHitCallback, null, this);
 
-    //Audio
+        //Audio
         this.winSound = this.sound.add("winSound");
-        this.loseSound = this.sound.add("loseSound");
-        //Enemy Audio
-        this.gruntHitSound = this.sound.add("gruntHit");
-        this.collectGruntSound = this.sound.add("collectGrunt");
-        this.bossSpawnSound = this.sound.add("bossSpawn");
-        this.bossDeathSound = this.sound.add("bossDeath");
-        this.bossHitSound = this.sound.add("bossHit");    
+        this.loseSound = this.sound.add("loseSound");   
     }
 
     update(time){
         if (gameOver == true){ //Things that need to happen on game over REGARDLESS of win/lose state go here
-<<<<<<< HEAD
-            playerAmmoCnt = 0; //Disable Player Ammo
-            bCellAmmoCnt = 0; //Disable Ammo Wheel
-            player.body.moves = false; //Disable player movement
-=======
             this.physics.pause(); //Pause the physics
->>>>>>> parent of 2e7e3df... Update Game.js
             this.time.delayedCall(1000 * 1, () => { //ES6 ONLY - ARROW FUNCTIONS DO NOT NEED PARAMETER INPUTS FOR args AND/OR callbackScope. THIS IS WHY THEY'RE MORE CONVENIENT THAN function() 
                 this.sound.removeByKey('menuMusic'); 
             });
@@ -345,33 +214,6 @@ class Game extends Phaser.Scene{
         }
 
         if (gruntAmount === 0){
-<<<<<<< HEAD
-            if(currentWave === maxWave){ //If we're on last wave and gruntAmount is zero, that means the player has defeated all waves, so spawn the boss
-                if (boss.visible == false){ //If the boss hasn't been spawned yet, do it. Otherwise skip this branch every frame. We only want to run this branch once.
-                    this.bossWaveText.visible = true;
-                    this.bossSpawnSound.play();
-                    this.time.delayedCall(1000 * 3, () => {
-                        this.bossWaveText.visible = false;
-                        boss.setVisible(true); //Make the boss visible now that the player has beaten all waves
-                        boss.setActive(true); //Enable the boss from having it's logic computed
-                        boss.body.enable = true; //Enable the boss
-                        boss.body.moves = true; //Allow it to move
-                    }); 
-                }
-                //Boss Death - ENDGAME BRANCH
-                if (bossHealth <= 0){
-                    this.bossDeathSound.play();
-                    boss.setVelocity(0, -60);
-                    this.victoryText.visible = true;
-                    this.winSound.play(); //Play game over win sound
-                    gameOver = true;
-                }
-            }
-            else{
-                currentWave += 1; //Increment the wave amount to make more baddies spawn
-                gruntAmount = currentWave * 2; //Spawn twice as many grunts next wave
-                playerCalories += 10; //Add 10 money just for beating the wave
-=======
             if(currentWave >= maxWave){ //If we're on wave 3 (max) and gruntAmount is zero, that means the player has defeated all waves
                 //boss.setVisible(true); //Make the boss invisible. Only make it visible again after waves have been complete
                 //boss.setActive(true); //Disable the boss from having it's logic computed
@@ -382,7 +224,6 @@ class Game extends Phaser.Scene{
             else{
                 currentWave += 1; //Increment the wave amount to make more baddies spawn
                 gruntAmount = currentWave * 2
->>>>>>> parent of 2e7e3df... Update Game.js
                 this.nextWaveText.visible = true; //Tell the player the next wave is coming and then soawn the, after 3 secs
                 this.time.delayedCall(1000 * 3, () => {
                     this.nextWaveText.visible = false; //THIS LINE IS BUGGED
@@ -391,11 +232,6 @@ class Game extends Phaser.Scene{
             }
         }
 
-<<<<<<< HEAD
-        this.currentWaveText.setText('Current Wave: ' + currentWave + '\nEnemies Left: ' + gruntAmount);
-        this.playerStatsText.setText('Calories: ' + playerCalories + '\nAntibodies: ' + playerAmmoCnt);
-=======
->>>>>>> parent of 2e7e3df... Update Game.js
         this.background.tilePositionY += 0.15; //Scroll the background for a parallax feel
         bCellAmmo.angle += 1; //Rotate the B-Cell's for a nice ammo wheel effect
         // Rotates player to face towards the mouse cursor
@@ -409,40 +245,16 @@ class Game extends Phaser.Scene{
 function enemyHitCallback(enemyHit, bulletHit){
     // If hit is true, disable both the projectile and the enemy
     if (bulletHit.active === true && enemyHit.active === true){
-        this.gruntHitSound.play();
         enemyHit.body.moves = false;
-        bulletHit.destroy(); //Delete the bullet on hit
+        bulletHit.destroy() //Delete the bullet on hit
     }
 }
 
-<<<<<<< HEAD
-function bossHitCallback(bossHit, bulletHit){
-    if (bulletHit.active === true){
-        this.bossHitSound.play();
-        bossHealth -= 5; //Reduce the boss's health
-        bulletHit.destroy(); //Delete the bullet on hit
-        //Procedural damage to the boss based on health remaining
-        if (40 < bossHealth && bossHealth < 76 ){ //Boss health is between [41 to 75]
-           boss.setTint(0xff9797); 
-        }
-        else if (0 < bossHealth && bossHealth < 41){ //Boss health is between [1 to 40]
-            boss.setTint(0xff5c5c);
-        }
-        else if (bossHealth <= 0){
-            boss.setTint(0xff0000); //Boss Died
-        }
-    }
-}
-
-=======
->>>>>>> parent of 2e7e3df... Update Game.js
 function collectGruntCallback(player, enemyHit){
     // If the enemy has already been anti-bodied, we can kill them
     if (enemyHit.body.moves === false){
-        this.collectGruntSound.play();
-        enemyHit.destroy(); //Destroy the hitgrunt Completely
+        enemyGrunts.remove(enemyHit, true, true); //Destroy the hitgrunt Completely
         gruntAmount -= 1;
-        playerCalories += 5; //Give the player 5 money every time the player collects a grunt
     }
 }
 
@@ -461,7 +273,7 @@ function ammoCallback(player, bCellAmmo){
 function lungsHitCallback(lungsHit, enemyHit){
     // If hit is true, disable both the projectile and the enemy
     if (lungsHit.active === true && enemyHit.active === true){
-        enemyHit.setActive(false);
+        enemyHit.setActive(false).setVisible(false);
         // Show damage to the lungs
         lungsHit.setTint(0xff0000);
         this.loseSound.play(); //Play game over lose sound
