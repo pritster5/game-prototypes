@@ -54,7 +54,7 @@ var gruntAmount = currentWave * 2; //Amount to spawn
 var projectile;
 var lungsBG;
 var boss; //Boss physics image
-var bossHealth = 100; //One boss is 10x tougher than one grunt
+var bossHealth = 150; //One boss is 10x tougher than one grunt
 var bossSpeed = 30;
 var player; //Player physics image
 var playerAmmoCnt = 3; //Player Ammo Count
