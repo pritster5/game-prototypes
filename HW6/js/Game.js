@@ -44,12 +44,12 @@ var Projectile = new Phaser.Class({
 });
 
 var currentWave = 1; //Start on the first wave
-var maxWave = 3; //The enemy spawn loop terminates after the third wave
+var maxWave = 4; //The enemy spawn loop terminates after the third wave
 var gameOver = false;
 var aimer;
 var enemyGrunts; //Physics Group for enemy grunts
 var gruntMinSpeed = 30;
-var gruntMaxSpeed = 60;
+var gruntMaxSpeed = 50;
 var gruntAmount = currentWave * 2; //Amount to spawn
 var projectile;
 var lungsBG;
@@ -77,10 +77,10 @@ class Game extends Phaser.Scene{
         enemyGrunts.createMultiple({
             key: 'enemyGrunt', 
             repeat: gruntAmount - 1,
-            setXY: { x: (Phaser.Math.Between(0, config.width)), y: 0, stepX: 0 } 
         }) //Call the spawner
         enemyGrunts.children.iterate(function(child){
-            child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed));
+            child.setPosition(Phaser.Math.Between(60, (config.width - 60)), 0); //Spawn each child at some random position across the top of the screen
+            child.setVelocity(0, Phaser.Math.FloatBetween(gruntMinSpeed, gruntMaxSpeed)); //Give each spawned child some random velovity within the bounds supplied
         });
     }
 
