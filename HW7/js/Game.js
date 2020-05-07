@@ -196,23 +196,23 @@ class Game extends Phaser.Scene{
 
         //TEXT
         //Event Related Text
-        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!\n Shoot and then Absorb the Viruses!', textStyle).setOrigin(0.5, 0.5); //Wave start text
+        this.introText = this.add.text(config.width / 2, config.height / 2.25, 'HERE THEY COME!\n Shoot and then Absorb the Viruses!', textStyle).setOrigin(0.5, 0.5); //Wave start text
         this.introText.visible = false;
-        this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
+        this.nextWaveText = this.add.text(config.width / 2, config.height / 2.25, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
         this.nextWaveText.visible = false;
-        this.bossWaveText = this.add.text(config.width / 2, config.height / 2, 'HERE COMES THE BOSS...\nTHIS IS IT!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
+        this.bossWaveText = this.add.text(config.width / 2, config.height / 2.25, 'HERE COMES THE BOSS...\nTHIS IS IT!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
         this.bossWaveText.visible = false;
-        this.victoryText = this.add.text(config.width / 2,config.height / 2, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
+        this.victoryText = this.add.text(config.width / 2,config.height / 2.25, 'YOU WIN!\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver WIN Text
         this.victoryText.visible = false;
         //GUI Related Text
         this.currentWaveText = this.add.text(4,4, 'Current Wave: ' + currentWave + '\nEnemies Left: ' + gruntAmount, waveStatStyle);
         this.playerStatsText = this.add.text(config.width - 106, 4, 'Calories: ' + playerCalories + '\nAntibodies: ' + playerAmmoCnt, playerStatStyle);
         //Ability Related Text
-        this.abilityOneText = this.add.text(config.width / 2, config.height / 2, 'All viruses move at half speed for 6 secs!', textStyle).setOrigin(0.5, 0.5);
+        this.abilityOneText = this.add.text(config.width / 2, config.height / 2.25, 'All viruses move at half speed for 6 secs!', textStyle).setOrigin(0.5, 0.5);
         this.abilityOneText.visible = false;
-        this.abilityTwoText = this.add.text(config.width / 2, config.height / 2, 'Unlimited Antibodies for 3 seconds!', textStyle).setOrigin(0.5, 0.5); //Wave start text
+        this.abilityTwoText = this.add.text(config.width / 2, config.height / 2.25, 'Unlimited Antibodies for 3 seconds!', textStyle).setOrigin(0.5, 0.5); //Wave start text
         this.abilityTwoText.visible = false;
-        this.calorieText = this.add.text(config.width / 2, config.height / 2, 'Not enough calories! :(', textStyle).setOrigin(0.5, 0.5);
+        this.calorieText = this.add.text(config.width / 2, config.height / 2.25, 'Not enough calories! :(', textStyle).setOrigin(0.5, 0.5);
         this.calorieText.visible = false;
 
         // Slow Grunt Ability Event Caller
@@ -267,7 +267,7 @@ class Game extends Phaser.Scene{
         boss.body.moves = false; //The boss must be still until the player beats all waves
         boss.body.enable = false; //Disable the boss from being involved in the physics sim until it spawns
         //Game Over Text
-        this.gameOverText = this.add.text(config.width / 2,config.height / 2, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
+        this.gameOverText = this.add.text(config.width / 2,config.height / 2.25, 'GAME OVER\nYou got Infected\n\nPress F5 to Replay', textStyle).setOrigin(0.5,0.5); //GameOver LOSE Text
         this.gameOverText.visible = false;
 
         //Give the player ammo if they overlap with the B-Cell
