@@ -196,7 +196,7 @@ class Game extends Phaser.Scene{
 
         //TEXT
         //Event Related Text
-        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!', textStyle).setOrigin(0.5, 0.5); //Wave start text
+        this.introText = this.add.text(config.width / 2, config.height / 2, 'HERE THEY COME!\n Shoot and then Absorb the Viruses!', textStyle).setOrigin(0.5, 0.5); //Wave start text
         this.introText.visible = false;
         this.nextWaveText = this.add.text(config.width / 2, config.height / 2, 'NEXT WAVE INCOMING...\nGET READY!', textStyle).setOrigin(0.5, 0.5); //Wave incoming text
         this.nextWaveText.visible = false;
@@ -255,7 +255,7 @@ class Game extends Phaser.Scene{
         this.introText.visible = true;
         enemyGrunts = this.physics.add.group(); 
         //Wave 1 Logic       
-        this.time.delayedCall(1000 * 3, ()=>{
+        this.time.delayedCall(1000 * 5, ()=>{
             this.introText.visible = false; //Hides the intro text after spawning the first wave
             this.spawnBaddies(); //Spawn first wave
         });
