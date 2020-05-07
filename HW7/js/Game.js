@@ -356,6 +356,7 @@ function enemyHitCallback(enemyHit, bulletHit){
     if (bulletHit.active === true && enemyHit.active === true){
         this.gruntHitSound.play();
         enemyHit.body.moves = false;
+        enemyHit.setTint(0xff9999); //Tint it to let players know it's stuck
         bulletHit.destroy(); //Delete the bullet on hit
     }
 }
